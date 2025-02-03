@@ -1,0 +1,6 @@
+[submodule "lib/cryptoSQLite"]
+	path = lib/cryptoSQLite
+	url = https://github.com/2042Third/cryptoSQLite.git
+[submodule "lib/pdm-crypt-module"]
+	path = lib/pdm-crypt-module
+	url = https://github.com/2042Third/pdm-crypt-module.git
