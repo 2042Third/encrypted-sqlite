@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(encrypted_sqlite VERSION 0.1 LANGUAGES C CXX)
+set (CMAKE_CXX_STANDARD 20)
 
-# Option to choose between static or shared library
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+# Force shared builds for all dependencies ----------------------
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
+# --------------------------------------------------------------
 
 set(PROJECT_FILES
     src/db/pdm_database.h
@@ -11,47 +13,51 @@ set(PROJECT_FILES
     src/crypto/pdmCryptoDB.hpp
 )
 
-# Create the library
-add_library(encrypted_sqlite ${PROJECT_FILES})
+# Force static builds for dependencies
+set(BUILD_SHARED_LIBS_TEMP ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(lib/pdm-crypt-module) # pdm encryption
+add_subdirectory(lib/cryptoSQLite) # encrypted database
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TEMP})
 
-# Set properties for the library
+# Always build shared library
+add_library(encrypted_sqlite SHARED ${PROJECT_FILES})
+
 set_target_properties(encrypted_sqlite PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
-    PUBLIC_HEADER "src/db/pdm_db.h;src/crypto/pdmCryptoDB.hpp"
+    PUBLIC_HEADER "src/db/pdm_database.h;src/crypto/pdmCryptoDB.hpp"  # Fixed header name
 )
 
 target_include_directories(encrypted_sqlite PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/pdm-crypt-module>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/pdm-crypt-module/src/lib>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptoSQLite>
     $<INSTALL_INTERFACE:include>
 )
 
-add_subdirectory(lib/pdm-crypt-module) # pdm encryption
-add_subdirectory(lib/cryptoSQLite) # encrypted database
+if(APPLE)
+  set_target_properties(encrypted_sqlite PROPERTIES
+      LINK_FLAGS "-Wl,-all_load"
+      OSX_ARCHITECTURES "arm64;x86_64"
+  )
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
+endif()
+
+# Export symbols for shared library
+include(GenerateExportHeader)
+generate_export_header(encrypted_sqlite)
+target_compile_definitions(encrypted_sqlite PRIVATE ENCRYPTED_SQLITE_EXPORTS)
 
 target_link_libraries(encrypted_sqlite PRIVATE
-    cc20 # pdm encryption
-    cryptosqlite # encrypted database interface
+    cc20
+    cryptosqlite  # Now properly links to shared lib chain
 )
 
-# Installation rules
-include(GNUInstallDirs)
+# Simplified local installation
 install(TARGETS encrypted_sqlite
-    EXPORT encrypted_sqliteTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/encrypted_sqlite
-)
-
-# Generate and install export file
-install(EXPORT encrypted_sqliteTargets
-    FILE encrypted_sqliteTargets.cmake
-    NAMESPACE encrypted_sqlite::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/encrypted_sqlite
+    LIBRARY  DESTINATION lib
+    ARCHIVE  DESTINATION lib
+    RUNTIME  DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/encrypted_sqlite
 )

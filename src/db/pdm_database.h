@@ -5,19 +5,16 @@
 #ifndef PDM_PLATFORMS_UI_PDM_DATABASE_H
 #define PDM_PLATFORMS_UI_PDM_DATABASE_H
 
-#include "src/handler/pdm_status.h"
 #include "sqlite3.h"
 #include "cryptosqlite/cryptosqlite.h"
-#include "nlohmann/json.hpp"
-#include "src/handler/types.h"
 
 namespace PDM {
-class pdm_database : public Status{
+class pdm_database {
 public:
 
   struct return_table{
     int argc=0;
-    std::vector<std::vector<std::string>> argv;
+    std::vector<std::vector<std::string> > argv;
     std::vector<std::string> col_name;
   };
   pdm_database();

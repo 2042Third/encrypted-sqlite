@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/cryptoSQLite" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/cryptoSQLite/external/securememory" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/cryptoSQLite/external/securememory/cmake-modules" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/pdm-crypt-module" vcs="Git" />
+  </component>
+</project>

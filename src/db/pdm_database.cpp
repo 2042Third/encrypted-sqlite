@@ -6,6 +6,7 @@
 #include "crypto/pdmCryptoDB.hpp"
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace PDM {
   static int callback(void *ptr, int argc, char **argv, char **azColName) {
@@ -46,16 +47,13 @@ namespace PDM {
  * */
 int PDM::pdm_database::open_db(const char *name, const char*pas, int pas_size) {
   namespace fs = std::filesystem;
-  change(PDM::Status::LOADING);
   fs::create_directories(fs::path(name).parent_path()); // Create user config dir
   cryptosqlite::setCryptoFactory([] (std::unique_ptr<IDataCrypt> &crypt) { // set the crypto factory
     crypt = std::make_unique<pdm_crypto_db>();
   });
   rc = sqlite3_open_encrypted(name, &db, pas, pas_size); // open the encrypted database
-  change(PDM::Status::OPEN);
   if( rc ){
     status_open = 0;
-    change(PDM::Status::ERROR_STATE);
     fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
     sqlite3_close(db);
     return 0;
@@ -65,25 +63,20 @@ int PDM::pdm_database::open_db(const char *name, const char*pas, int pas_size) {
 }
 
 int PDM::pdm_database::close_db(char *name) {
-  change(PDM::Status::LOADING);
   sqlite3_close(db);
-  change(PDM::Status::CLOSED);
   status_open=0;
   return 1;
 }
 
 int PDM::pdm_database::execute(const char *input) {
-  change(PDM::Status::LOADING);
   reset(&current_display_table);
   rc = sqlite3_exec(db, input, callback, &current_display_table, &zErrMsg);
   if( rc!=SQLITE_OK ){
-    change(PDM::Status::ERROR_STATE);
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
     return 0;
   }
   last_command = input;
-  change(PDM::Status::OPEN);
   return 1;
 }
 
