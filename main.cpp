@@ -11,6 +11,7 @@ class PDMDatabaseTests {
 private:
   PDM::pdm_database db;
   const char* TEST_DB_PATH = "./test_db.sqlite";
+  const char* TEST_DB_KEYFILE_PATH = "./test_db.sqlite-keyfile";
   const char* TEST_PASSWORD = "test_password";
 
   void printTestResult(const char* testName, bool success) {
@@ -70,6 +71,7 @@ private:
   void cleanup() {
     // Remove the test database file
     std::remove(TEST_DB_PATH);
+    std::remove(TEST_DB_KEYFILE_PATH);
   }
 
 public:
