@@ -3,3 +3,8 @@ cmake-build-release
 cmake-build-relwithdebinfo
 xcode-build
 build
+c_test_program
+test.db
+test.db-keyfile
+test_program
+*.o
