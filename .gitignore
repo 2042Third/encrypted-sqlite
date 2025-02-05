@@ -8,3 +8,11 @@ test.db
 test.db-keyfile
 test_program
 *.o
+*.dylib
+*.so
+*.a
+*.exe
+*.pdb
+*.obj
+*.dll
+*.lib
