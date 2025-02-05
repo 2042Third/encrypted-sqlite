@@ -169,4 +169,9 @@ double pdm_db_column_double(PDMStatement* stmt, int col) {
   return sqlite3_column_double(s, col);
 }
 
+int pdm_db_bind_double(PDMStatement* stmt, int index, double value) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_bind_double(s, index, value);
+}
+
 } // end extern "C"

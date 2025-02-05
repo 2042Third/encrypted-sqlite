@@ -90,6 +90,11 @@ int pdm_db_column_int(PDMStatement* stmt, int col);
  */
 double pdm_db_column_double(PDMStatement* stmt, int col);
 
+/**
+ * Bind a double value.
+ */
+int pdm_db_bind_double(PDMStatement* stmt, int index, double value);
+
 #ifdef __cplusplus
 }
 #endif
