@@ -1,10 +1,12 @@
 #ifndef PDM_DATABASE_WRAPPER_H
 #define PDM_DATABASE_WRAPPER_H
-#include <cstdlib>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// Opaque type for int64_t
+typedef long long int64_t;
 
 // Opaque type for the database
 typedef struct PDMDatabase PDMDatabase;

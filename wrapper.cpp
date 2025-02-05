@@ -2,6 +2,7 @@
 #include "src/db/pdm_database.h"  // Your C++ database implementation
 #include <cstring>
 #include <sqlite3.h>              // Include SQLite header for prepared-statement functions
+#include <cstdlib>
 
 extern "C" {
 
