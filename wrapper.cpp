@@ -1,7 +1,6 @@
 #include "wrapper.h"
 #include "src/db/pdm_database.h"  // Your C++ database implementation
 #include <cstring>
-#include <cstdlib>
 #include <sqlite3.h>              // Include SQLite header for prepared-statement functions
 
 extern "C" {
@@ -144,6 +143,11 @@ int pdm_db_bind_null(PDMStatement* stmt, int index) {
   return sqlite3_bind_null(s, index);
 }
 
+int pdm_db_bind_double(PDMStatement* stmt, int index, double value) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_bind_double(s, index, value);
+}
+
 int pdm_db_step(PDMStatement* stmt) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
   return sqlite3_step(s);
@@ -164,14 +168,48 @@ int pdm_db_column_int(PDMStatement* stmt, int col) {
   return sqlite3_column_int(s, col);
 }
 
+int64_t pdm_db_column_int64(PDMStatement* stmt, int col) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_column_int64(s, col);
+}
+
 double pdm_db_column_double(PDMStatement* stmt, int col) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
   return sqlite3_column_double(s, col);
 }
 
-int pdm_db_bind_double(PDMStatement* stmt, int index, double value) {
+const void* pdm_db_column_blob(PDMStatement* stmt, int col) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
-  return sqlite3_bind_double(s, index, value);
+  return sqlite3_column_blob(s, col);
 }
+
+const char* pdm_db_column_name(PDMStatement* stmt, int col) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_column_name(s, col);
+}
+
+int pdm_db_column_bytes(PDMStatement* stmt, int col) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_column_bytes(s, col);
+}
+
+int pdm_db_column_bytes16(PDMStatement* stmt, int col) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_column_bytes16(s, col);
+}
+
+int pdm_db_column_count(PDMStatement* stmt) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_column_count(s);
+}
+
+int pdm_db_column_type(PDMStatement* stmt, int col) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  if (sqlite3_column_type(s, col) == SQLITE_INTEGER){
+
+  }
+  return 1;
+}
+
 
 } // end extern "C"

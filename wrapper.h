@@ -1,5 +1,6 @@
 #ifndef PDM_DATABASE_WRAPPER_H
 #define PDM_DATABASE_WRAPPER_H
+#include <cstdlib>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,9 +31,22 @@ const char* pdm_db_get_column_name(PDMReturnTable* table, int col);
 int pdm_db_get_row_count(PDMReturnTable* table);
 int pdm_db_get_column_count(PDMReturnTable* table);
 
+//// SQLite Fundamental Datatypes
+//#define SQLITE_INTEGER  1
+//#define SQLITE_FLOAT    2
+//#define SQLITE_BLOB     4
+//#define SQLITE_NULL     5
+//#ifdef SQLITE_TEXT
+//# undef SQLITE_TEXT
+//#else
+//# define SQLITE_TEXT     3
+//#endif
+//#define SQLITE3_TEXT     3
+
 // ------------------------------------------------------------------
 // New: Prepared Statement API for Go usage
 // ------------------------------------------------------------------
+
 
 // Opaque type for prepared statements.
 typedef struct PDMStatement PDMStatement;
@@ -65,6 +79,11 @@ int pdm_db_bind_blob(PDMStatement* stmt, int index, const void* blob, int size);
 int pdm_db_bind_null(PDMStatement* stmt, int index);
 
 /**
+ * Bind a double value.
+ */
+int pdm_db_bind_double(PDMStatement* stmt, int index, double value);
+
+/**
  * Step the prepared statement (i.e. execute one step).
  * Returns the result code (e.g. SQLITE_ROW, SQLITE_DONE, or an error code).
  */
@@ -86,14 +105,44 @@ const char* pdm_db_column_text(PDMStatement* stmt, int col);
 int pdm_db_column_int(PDMStatement* stmt, int col);
 
 /**
+ * Retrieve an 64-bit integer value from the specified column.
+ */
+int64_t pdm_db_column_int64(PDMStatement* stmt, int col);
+
+/**
  * Retrieve a double value from the specified column.
  */
 double pdm_db_column_double(PDMStatement* stmt, int col);
 
 /**
- * Bind a double value.
+ * Retrieve a blob value from the specified column.
  */
-int pdm_db_bind_double(PDMStatement* stmt, int index, double value);
+const void* pdm_db_column_blob(PDMStatement* stmt, int col);
+
+/**
+ * Retrieve the name of the specified column.
+ */
+const char* pdm_db_column_name(PDMStatement* stmt, int col);
+
+/**
+ * Retrieve a bytes value from the specified column.
+ */
+int pdm_db_column_bytes(PDMStatement* stmt, int col);
+
+/**
+ * Retrieve a bytes16 value from the specified column.
+ */
+int pdm_db_column_bytes16(PDMStatement* stmt, int col);
+
+/**
+ * Retrieve the number of columns in the result set.
+ */
+int pdm_db_column_count(PDMStatement* stmt);
+
+/**
+ * Retrieve the type of the specified column.
+ */
+int pdm_db_column_type(PDMStatement* stmt, int col);
 
 #ifdef __cplusplus
 }
