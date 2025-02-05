@@ -206,10 +206,7 @@ int pdm_db_column_count(PDMStatement* stmt) {
 
 int pdm_db_column_type(PDMStatement* stmt, int col) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
-  if (sqlite3_column_type(s, col) == SQLITE_INTEGER){
-
-  }
-  return 1;
+  return sqlite3_column_type(s, col);
 }
 
 
