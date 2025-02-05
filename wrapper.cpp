@@ -101,6 +101,42 @@ int pdm_db_get_column_count(PDMReturnTable* table) {
   return table ? table->col_count : 0;
 }
 
+int pdm_db_begin(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_exec(pdm_db->db, "BEGIN", nullptr, nullptr, nullptr);
+}
+
+int pdm_db_commit(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_exec(pdm_db->db, "COMMIT", nullptr, nullptr, nullptr);
+}
+
+int pdm_db_rollback(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_exec(pdm_db->db, "ROLLBACK", nullptr, nullptr, nullptr);
+}
+
+int pdm_db_get_autocommit(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_get_autocommit(pdm_db->db);
+}
+
+const char* pdm_db_errmsg(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_errmsg(pdm_db->db);
+}
+
+int pdm_db_last_insert_rowid(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return (int)sqlite3_last_insert_rowid(pdm_db->db);
+}
+
+int pdm_db_changes(PDMDatabase* db) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return sqlite3_changes(pdm_db->db);
+}
+
+
 // =====================
 // New: Prepared Statement Functions
 // =====================

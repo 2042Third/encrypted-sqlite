@@ -45,6 +45,16 @@ int pdm_db_get_column_count(PDMReturnTable* table);
 //#endif
 //#define SQLITE3_TEXT     3
 
+// Transaction-related functions
+int pdm_db_begin(PDMDatabase* db);
+int pdm_db_commit(PDMDatabase* db);
+int pdm_db_rollback(PDMDatabase* db);
+int pdm_db_get_autocommit(PDMDatabase* db);
+const char* pdm_db_errmsg(PDMDatabase* db);
+int pdm_db_last_insert_rowid(PDMDatabase* db);
+int pdm_db_changes(PDMDatabase* db);
+
+
 // ------------------------------------------------------------------
 // New: Prepared Statement API for Go usage
 // ------------------------------------------------------------------
