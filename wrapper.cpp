@@ -170,6 +170,11 @@ int pdm_db_bind_int(PDMStatement* stmt, int index, int value) {
   return sqlite3_bind_int(s, index, value);
 }
 
+int pdm_db_bind_int64(PDMStatement* stmt, int index, int64_t value) {
+  sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
+  return sqlite3_bind_int64(s, index, value);
+}
+
 int pdm_db_bind_blob(PDMStatement* stmt, int index, const void* blob, int size) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
   return sqlite3_bind_blob(s, index, blob, size, SQLITE_TRANSIENT);

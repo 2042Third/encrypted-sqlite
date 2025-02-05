@@ -81,6 +81,11 @@ int pdm_db_bind_text(PDMStatement* stmt, int index, const char* text);
 int pdm_db_bind_int(PDMStatement* stmt, int index, int value);
 
 /**
+ * Bind a 64-bit integer value.
+ */
+int pdm_db_bind_int64(PDMStatement* stmt, int index, int64_t value);
+
+/**
  * Bind a blob value.
  */
 int pdm_db_bind_blob(PDMStatement* stmt, int index, const void* blob, int size);
