@@ -47,7 +47,7 @@ target_include_directories(encrypted_sqlite PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-# macOS-specific settings
+# macOS-specific settings for encrypted_sqlite
 if(APPLE)
   set_target_properties(encrypted_sqlite PROPERTIES
       LINK_FLAGS "-Wl,-all_load"
@@ -70,15 +70,58 @@ target_link_libraries(encrypted_sqlite PRIVATE
     cryptosqlite
 )
 
-# Install the library and headers in a central location.
+# Install the encrypted_sqlite library and headers
 install(TARGETS encrypted_sqlite
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}     # for shared libraries (.dylib on macOS)
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}     # for static libraries
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}      # for executables
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}       # for static libraries
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}        # for executables
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/encrypted_sqlite
 )
 
+# (Retain any extra install rules you already have)
 install(
     FILES "${CMAKE_SOURCE_DIR}/build/lib/cryptoSQLite/libcryptosqlite.dylib"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+########################################################################
+# Build the wrapper shared library from wrapper.cpp (replacing manual clang++)
+########################################################################
+
+# Assuming wrapper.cpp sits in the top-level source directory.
+add_library(wrapper SHARED wrapper.cpp)
+
+# Add the include directories used in your manual command:
+target_include_directories(wrapper PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}                                  # ./
+    ${CMAKE_CURRENT_SOURCE_DIR}/src                              # ./src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/db                           # ./src/db
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/crypto                         # ./src/crypto
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib                              # ./lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptoSQLite                   # ./lib/cryptoSQLite
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptoSQLite/external/securememory/include  # ./lib/cryptoSQLite/external/securememory/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/pdm-crypt-module/src/lib       # ./lib/pdm-crypt-module/src/lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptoSQLite/include           # ./lib/cryptoSQLite/include
+)
+
+# Link the wrapper against the libraries you used (-lencrypted_sqlite -lcryptosqlite)
+target_link_libraries(wrapper PRIVATE
+    encrypted_sqlite
+    cryptosqlite
+)
+
+# On macOS, set the rpath and install_name options to match your manual flags.
+if(APPLE)
+  target_link_options(wrapper PRIVATE
+      "-Wl,-rpath,@loader_path/../Frameworks"
+      "-Wl,-install_name,@rpath/libwrapper.dylib"
+  )
+  set_target_properties(wrapper PROPERTIES OSX_ARCHITECTURES "arm64;x86_64")
+endif()
+
+# Install the wrapper library into the same install directories.
+install(TARGETS wrapper
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
