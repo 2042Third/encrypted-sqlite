@@ -89,7 +89,7 @@ install(
 ########################################################################
 
 # Assuming wrapper.cpp sits in the top-level source directory.
-add_library(wrapper SHARED wrapper.cpp)
+add_library(wrapper SHARED wrapper.cpp wrapper.h)
 
 # Add the include directories used in your manual command:
 target_include_directories(wrapper PRIVATE
@@ -124,4 +124,9 @@ install(TARGETS wrapper
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(
+    FILES "${CMAKE_SOURCE_DIR}/wrapper.h"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
