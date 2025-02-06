@@ -84,9 +84,10 @@ clang++ -shared -o libwrapper.dylib wrapper.cpp \
 -I./lib/pdm-crypt-module/src/lib \
 -I./lib/cryptoSQLite/include \
 -L./build \
--L./build/lib/cryptoSQLite  \
+-L./build/lib/cryptoSQLite \
 -L./build/lib/cryptoSQLite/external/securememory \
--Wl,-rpath,./build \
+-Wl,-rpath,@loader_path/../Frameworks \
+-Wl,-install_name,@rpath/libwrapper.dylib \
 -lencrypted_sqlite \
 -lcryptosqlite \
 -std=c++20
