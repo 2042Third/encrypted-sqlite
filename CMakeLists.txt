@@ -12,6 +12,22 @@ endif()
 # Use C++20
 set(CMAKE_CXX_STANDARD 20)
 
+
+
+if(MSVC)
+    set(BUILD_SHARED_LIBS_TEMP ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
+    add_subdirectory(lib/cryptoSQLite/external/securememory)
+    set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TEMP})
+
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()
+
+if(NOT APPLE)
+    # Remove the -undefined dynamic_lookup flag for non-Apple platforms
+    string(REPLACE "-undefined dynamic_lookup" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+endif()
+
 # Force shared builds for dependencies
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 
@@ -64,10 +80,43 @@ include(GenerateExportHeader)
 generate_export_header(encrypted_sqlite)
 target_compile_definitions(encrypted_sqlite PRIVATE ENCRYPTED_SQLITE_EXPORTS)
 
+if(WIN32)
+    set_target_properties(encrypted_sqlite PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+endif()
+
 # Link against dependencies (assuming these targets are defined by the subdirectories)
 target_link_libraries(encrypted_sqlite PRIVATE
     cc20
     cryptosqlite
+    "${CMAKE_BINARY_DIR}/lib/libSecureMemory.dll.a"  # Use exact path and filename
+)
+# Also make sure the build order is correct by adding:
+add_dependencies(encrypted_sqlite SecureMemory)
+# Also add this to help find the DLL at runtime
+target_link_directories(encrypted_sqlite PRIVATE
+    "${CMAKE_BINARY_DIR}/lib"
+)
+# And ensure the runtime output directories are set properly for Windows:
+if(WIN32)
+    set_target_properties(SecureMemory PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+    
+    set_target_properties(encrypted_sqlite PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    )
+endif()
+
+target_include_directories(encrypted_sqlite PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/cryptoSQLite/external/securememory/include
 )
 
 # Install the encrypted_sqlite library and headers
