@@ -3,6 +3,10 @@ rm -rf build && mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(pwd)/../install
 cmake --build . --target install
 
+#windows version
+cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="C:\Users\18604\Desktop\net\minimal-desktop-pdm\pdm-v3-wails3\pdm\encrypted-sqlite\install"
+cmake --build . --target install
+
 # with rpath
 clang++ main.cpp \
 -I./src \
