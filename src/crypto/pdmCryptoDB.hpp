@@ -52,13 +52,13 @@ public:
         ,(uint8_t*)wrappedKey.data()
         ,wrappingKey.const_data(), wrappingKey.size());
 
-//    std::cout<<"key"<<std::endl;
-//    print_stats(key.const_data(),key_size);
-//    std::cout<<"Wrapped key"<<std::endl;
-//    print_stats(wrappedKey.const_data(),key_size+NONCE_SIZE+POLY_SIZE);
-//
-//    std::cout<<"Wrapping key"<<std::endl;
-//    print_stats(wrappingKey.const_data(),wrappingKey.size());
+    // std::cout<<"key"<<std::endl;
+    // print_stats(key.const_data(),key_size);
+    // std::cout<<"Wrapped key"<<std::endl;
+    // print_stats(wrappedKey.const_data(),key_size+NONCE_SIZE+POLY_SIZE);
+    //
+    // std::cout<<"Wrapping key"<<std::endl;
+    // print_stats(wrappingKey.const_data(),wrappingKey.size());
   }
 
   void unwrapKey(Buffer &key, const Buffer &wrappedKey, const Buffer &wrappingKey) const override {
@@ -69,12 +69,12 @@ public:
                                 ,(uint8_t*)key.data()
                                 ,wrappingKey.const_data(), wrappingKey.size());
 
-//    std::cout<<"key"<<std::endl;
-//    print_stats(key.const_data(),key_size);
-//    std::cout<<"Wrapped key"<<std::endl;
-//    print_stats(wrappedKey.const_data(),key_size+NONCE_SIZE+POLY_SIZE);
-//    std::cout<<"Wrapping key"<<std::endl;
-//    print_stats(wrappingKey.const_data(),wrappingKey.size());
+    // std::cout<<"key"<<std::endl;
+    // print_stats(key.const_data(),key_size);
+    // std::cout<<"Wrapped key"<<std::endl;
+    // print_stats(wrappedKey.const_data(),key_size+NONCE_SIZE+POLY_SIZE);
+    // std::cout<<"Wrapping key"<<std::endl;
+    // print_stats(wrappingKey.const_data(),wrappingKey.size());
   }
 
   uint32_t extraSize() const override { return cc20_utility::nonce_key_pair_size()+NONCE_SIZE+POLY_SIZE+1; }
@@ -89,11 +89,11 @@ private:
   }
 
   static void print_stats(const uint8_t* a,size_t size,int binary=1) {
-//    std::string ac ; ac.resize(size); memcpy(ac.data(),a,size);
-//    std::cout<< "Size : \""<<ac.size()<<"\""<<std::endl;
-//    if(!binary)std::cout<< "Plain: "<<ac<<std::endl;
-//    std::cout<< " Hax : \""<<stoh(ac)<<"\""<<std::endl;
-//    std::cout<< "Hash : \""<<get_hash(ac)<<"\""<<std::endl;
+    // std::string ac ; ac.resize(size); memcpy(ac.data(),a,size);
+    // std::cout<< "Size : \""<<ac.size()<<"\""<<std::endl;
+    // if(!binary)std::cout<< "Plain: "<<ac<<std::endl;
+    // std::cout<< " Hax : \""<<stoh(ac)<<"\""<<std::endl;
+    // std::cout<< "Hash : \""<<get_hash(ac)<<"\""<<std::endl;
   }
 };
 #endif

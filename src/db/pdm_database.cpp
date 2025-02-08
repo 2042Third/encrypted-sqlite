@@ -7,29 +7,36 @@
 #include <memory>
 #include <string>
 #include <filesystem>
+#include <thread>
 
 namespace PDM {
-  static int callback(void *ptr, int argc, char **argv, char **azColName) {
-    using tbl_type = PDM::pdm_database::return_table;
-    auto* table = static_cast<tbl_type*>(ptr);
-
-    int i;
-    std::vector<std::string> tmp;
-    if(table->argc==0){ // first time recording
-      table->argc = argc;
-      for (unsigned f =0 ;f<argc;f++) {
-        if (azColName[f]) table->col_name.push_back(std::move(std::string(azColName[f])));
-        else table->col_name.push_back(std::move(std::string("")));
-      }
-    }
-    for (i = 0; i < argc; i++) {
-      if (argv[i]) tmp.push_back(std::move(std::string(argv[i])));
-      else tmp.push_back(std::move(std::string("")));
-    }
-    table->argv.push_back(std::move(tmp));
-    printf("\n");
-    return 0;
-  }
+  // static int callback(void *ptr, int argc, char **argv, char **azColName) {
+  //   std::cout << "Callback entered with " << argc << " columns" << std::endl;
+  //   using tbl_type = PDM::pdm_database::return_table;
+  //   auto* table = static_cast<tbl_type*>(ptr);
+  //   try {
+  //
+  //     int i;
+  //     std::vector<std::string> tmp;
+  //     if(table->argc==0){ // first time recording
+  //       table->argc = argc;
+  //       for (unsigned f =0 ;f<argc;f++) {
+  //         if (azColName[f]) table->col_name.push_back(std::move(std::string(azColName[f])));
+  //         else table->col_name.push_back(std::move(std::string("")));
+  //       }
+  //     }
+  //     for (i = 0; i < argc; i++) {
+  //       if (argv[i]) tmp.push_back(std::move(std::string(argv[i])));
+  //       else tmp.push_back(std::move(std::string("")));
+  //     }
+  //     table->argv.push_back(std::move(tmp));
+  //     std::cout << "Callback completed successfully" << std::endl;
+  //   }
+  //   catch (const std::exception& e) {
+  //     std::cerr << "Error in callback: " << e.what() << std::endl;
+  //   }
+  //   return 0;
+  // }
 
   pdm_database::pdm_database() {
   }
@@ -38,6 +45,27 @@ namespace PDM {
 
   }
 }
+
+bool PDM::pdm_database::test_connection() const {
+    std::cout << "Testing database connection..." << std::endl;
+
+    const char* test_query = "SELECT 1;";
+    char* err_msg = nullptr;
+
+    std::cout << "Executing simple test query..." << std::endl;
+    int test_rc = sqlite3_exec(db, test_query, nullptr, nullptr, &err_msg);
+
+    if (test_rc != SQLITE_OK) {
+        std::cerr << "Database test failed: " << (err_msg ? err_msg : "Unknown error") << std::endl;
+        sqlite3_free(err_msg);
+        return false;
+    }
+
+    std::cout << "Database test successful" << std::endl;
+    return true;
+}
+
+
 /**
  * Open a database file.
  * @param name name and path of the database file
@@ -68,7 +96,7 @@ int PDM::pdm_database::close_db(char *name) {
   return 1;
 }
 
-int PDM::pdm_database::execute(const char *input) {
+int PDM::pdm_database::execute(const char *input, int (*callback)(void*, int, char**, char**)) {
   std::cout << "Starting execute for: " << input << std::endl;
   reset(&current_display_table);
 

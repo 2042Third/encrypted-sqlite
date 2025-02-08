@@ -8,10 +8,12 @@
 #include "sqlite3.h"
 #include "cryptosqlite/cryptosqlite.h"
 
+void test_encryption();
+
 namespace PDM {
 class pdm_database {
 public:
-
+  // static int callback(void *ptr, int argc, char **argv, char **azColName);
   struct return_table{
     int argc=0;
     std::vector<std::vector<std::string> > argv;
@@ -20,9 +22,12 @@ public:
   pdm_database();
   ~pdm_database();
 
+  bool test_connection() const;
+
   int open_db(const char* name, const char*pas,int pas_size);
   int close_db(char* name);
-  int execute(const char *input);
+  int execute(const char *input, int (*callback)(void*, int, char**, char**) = nullptr);
+
 
   static void reset (return_table* a) {
     a->argc=0;
