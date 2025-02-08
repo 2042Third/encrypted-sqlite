@@ -4,29 +4,24 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(pwd)/../install
 cmake --build . --target install
 
 #windows version
-cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="C:\Users\18604\Desktop\net\minimal-desktop-pdm\pdm-v3-wails3\pdm\encrypted-sqlite\install"
+cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .. -DCMAKE_BUILD_TYPE=Release
+cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install
+
 cmake --build . --target install
 
 set CGO_ENABLED=1
 
 # with rpath
 clang++ main.cpp \
--I./src \
--I./src/db \
--I./src/crypto \
--I./lib \
--I./lib/cryptoSQLite \
--I./lib/cryptoSQLite/external/securememory/include \
--I./lib/pdm-crypt-module/src/lib \
+-I./install/include \
 -I./lib/cryptoSQLite/include \
--I./build \
--L./build \
--Wl,-rpath,./build \
--Wl,-rpath,./build/lib/cryptoSQLite \
-./build/libencrypted_sqlite.dylib \
-./build/libencrypted_sqlite.0.1.dylib \
-./build/libencrypted_sqlite.0.dylib \
-./build/lib/cryptoSQLite/libcryptosqlite.dylib \
+-I./lib/cryptoSQLite/external/securememory/include \
+-L./install/lib \
+-Wl,-rpath,./install/bin \
+-Wl,-rpath,./install/lib \
+-lencrypted_sqlite \
+-lcryptosqlite \
+-lwrapper \
 -std=c++20 \
 -o test_program
 

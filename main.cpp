@@ -6,6 +6,7 @@
 #include "src/db/pdm_database.h"
 #include <cassert>
 #include <iostream>
+#include <cstring>
 
 class PDMDatabaseTests {
 private:
@@ -25,17 +26,27 @@ private:
   }
 
   bool testCreateTable() {
-    const char* createTableSQL =
-      "CREATE TABLE IF NOT EXISTS test_table ("
-      "id INTEGER PRIMARY KEY,"
-      "name TEXT NOT NULL,"
-      "value INTEGER"
-      ");";
+    std::cout << "About to create table..." << std::endl;
+    auto createTableSQL =
+        "CREATE TABLE IF NOT EXISTS test_table ("
+        "id INTEGER PRIMARY KEY,"
+        "name TEXT NOT NULL,"
+        "value INTEGER"
+        ");";
 
-    bool success = db.execute(createTableSQL);
+    std::cout << "Executing SQL: " << createTableSQL << std::endl;
+    bool success = false;
+    try {
+      success = db.execute(createTableSQL);
+    } catch (const std::exception& e) {
+      std::cout << "Exception during create table: " << e.what() << std::endl;
+      return false;
+    }
+    std::cout << "Create table execution completed" << std::endl;
     printTestResult("Create Table Test", success);
     return success;
   }
+
 
   bool testInsertData() {
     const char* insertSQL =
@@ -97,6 +108,7 @@ public:
 
 // Usage example:
 int main() {
+  std::cout << "In main\n" << std::endl;
   PDMDatabaseTests tests;
   tests.runAllTests();
   return 0;

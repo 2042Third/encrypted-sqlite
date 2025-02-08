@@ -69,9 +69,23 @@ int PDM::pdm_database::close_db(char *name) {
 }
 
 int PDM::pdm_database::execute(const char *input) {
+  std::cout << "Starting execute for: " << input << std::endl;
   reset(&current_display_table);
+
+  // Check if database is valid
+  if (!db) {
+    std::cerr << "Database handle is null" << std::endl;
+    return 0;
+  }
+
+  // Get current SQLite status
+  std::cout << "SQLite status before exec: " << sqlite3_errcode(db) << std::endl;
+
   rc = sqlite3_exec(db, input, callback, &current_display_table, &zErrMsg);
-  if( rc!=SQLITE_OK ){
+
+  std::cout << "SQLite exec completed with rc: " << rc << std::endl;
+
+  if(rc != SQLITE_OK){
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
     return 0;
@@ -79,6 +93,7 @@ int PDM::pdm_database::execute(const char *input) {
   last_command = input;
   return 1;
 }
+
 
 std::string PDM::pdm_database::getStrReturn(sqlite3_stmt *stmt, int i) {
   return
