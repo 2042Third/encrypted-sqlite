@@ -255,9 +255,9 @@ int pdm_db_column_type(PDMStatement* stmt, int col) {
   return sqlite3_column_type(s, col);
 }
 
-void pdm_db_reset(PDMStatement* stmt) {
+int pdm_db_reset(PDMStatement* stmt) {
   sqlite3_stmt* s = reinterpret_cast<sqlite3_stmt*>(stmt);
-  sqlite3_reset(s);
+  return sqlite3_reset(s);
 }
 
 } // end extern "C"
