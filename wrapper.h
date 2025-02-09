@@ -164,6 +164,8 @@ int pdm_db_column_count(PDMStatement* stmt);
  */
 int pdm_db_column_type(PDMStatement* stmt, int col);
 
+void pdm_db_reset(PDMStatement* stmt);
+
 #ifdef __cplusplus
 }
 #endif
