@@ -24,6 +24,11 @@ int pdm_db_execute(PDMDatabase* db, const char* sql) {
   return pdm_db->execute(sql) ? 1 : 0;
 }
 
+int pdm_db_execute_full(PDMDatabase* db, const char* sql, int (*callback)(void*, int, char**, char**), void* ptr, char** errmsg, uint64_t errmsg_len) {
+  auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
+  return pdm_db->execute_full(sql, callback, ptr, errmsg, errmsg_len) ? 1 : 0;
+}
+
 void pdm_db_close(PDMDatabase* db, char* path) {
   auto* pdm_db = reinterpret_cast<PDM::pdm_database*>(db);
   pdm_db->close_db(path);

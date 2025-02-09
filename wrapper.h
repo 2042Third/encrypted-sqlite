@@ -5,8 +5,10 @@
 extern "C" {
 #endif
 
-// Opaque type for int64_t
+// type for int64_t
 typedef long long int64_t;
+// type for uint64_t
+typedef unsigned long long uint64_t;
 
 // Opaque type for the database
 typedef struct PDMDatabase PDMDatabase;
@@ -23,6 +25,7 @@ typedef struct PDMReturnTable {
 // Database operations
 PDMDatabase* pdm_db_open(const char* path, const char* password, int password_len);
 int pdm_db_execute(PDMDatabase* db, const char* sql);
+int pdm_db_execute_full(PDMDatabase* db, const char* sql, int (*callback)(void*, int, char**, char**), void* ptr, char** errmsg, uint64_t errmsg_len);
 void pdm_db_close(PDMDatabase* db, char* path);
 
 // Return table operations

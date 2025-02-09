@@ -97,7 +97,6 @@ int PDM::pdm_database::close_db(char *name) {
 }
 
 int PDM::pdm_database::execute(const char *input, int (*callback)(void*, int, char**, char**)) {
-  std::cout << "Starting execute for: " << input << std::endl;
   reset(&current_display_table);
 
   // Check if database is valid
@@ -106,18 +105,32 @@ int PDM::pdm_database::execute(const char *input, int (*callback)(void*, int, ch
     return 0;
   }
 
-  // Get current SQLite status
-  std::cout << "SQLite status before exec: " << sqlite3_errcode(db) << std::endl;
-
   rc = sqlite3_exec(db, input, callback, &current_display_table, &zErrMsg);
-
-  std::cout << "SQLite exec completed with rc: " << rc << std::endl;
-
   if(rc != SQLITE_OK){
     fprintf(stderr, "SQL error: %s\n", zErrMsg);
     sqlite3_free(zErrMsg);
     return 0;
   }
+
+  last_command = input;
+  return 1;
+}
+
+int PDM::pdm_database::execute_full(const char *input, int (*callback)(void*, int, char**, char**), void* ptr, char** errmsg, size_t errmsg_len) {
+  // Check if database is valid
+  if (!db) {
+    std::cerr << "Database handle is null" << std::endl;
+    return 0;
+  }
+
+  rc = sqlite3_exec(db, input, callback, ptr, &zErrMsg);
+  if(rc != SQLITE_OK){
+    copy_error_msg(*errmsg, zErrMsg, errmsg_len);
+    fprintf(stderr, "SQL error: %s\n", zErrMsg);
+    sqlite3_free(zErrMsg);
+    return 0;
+  }
+
   last_command = input;
   return 1;
 }
@@ -130,4 +143,11 @@ std::string PDM::pdm_database::getStrReturn(sqlite3_stmt *stmt, int i) {
   :(const unsigned char * )"") );
 }
 
-
+void PDM::pdm_database::copy_error_msg(char* dest, const char* src, size_t max_len) {
+  if (src) {
+    strncpy(dest, src, max_len - 1);
+    dest[max_len - 1] = '\0';
+  } else {
+    dest[0] = '\0';
+  }
+}

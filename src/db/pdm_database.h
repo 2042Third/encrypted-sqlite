@@ -27,6 +27,12 @@ public:
   int open_db(const char* name, const char*pas,int pas_size);
   int close_db(char* name);
   int execute(const char *input, int (*callback)(void*, int, char**, char**) = nullptr);
+  int execute_full(const char *input,
+                    int (*callback)(void*, int, char**, char**) ,
+                    void* ptr,
+                    char** errmsg,
+                    size_t errmsg_len
+                    );
 
 
   static void reset (return_table* a) {
@@ -49,6 +55,8 @@ public:
     "last_time_open DATETIME DEFAULT CURRENT_TIMESTAMP,"
     "data TEXT );";
 
+  // Helper function to copy error message with limit
+  void copy_error_msg(char* dest, const char* src, size_t max_len);
 };
 
 }
